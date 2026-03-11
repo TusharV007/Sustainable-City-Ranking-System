@@ -84,3 +84,65 @@ export const analyzeCitySustainability = async (
     };
   }
 };
+
+export const fetchCityMetrics = async (
+  cityName: string,
+  country: string
+): Promise<CityMetrics & { region: string }> => {
+  if (!apiKey) {
+    throw new Error("Gemini API key is not configured");
+  }
+
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+  const prompt = `
+    You are a world-class urban environmental researcher. 
+    Provide estimated sustainability metrics for ${cityName}, ${country} based on latest available environmental reports, regional averages, and urban characteristics.
+
+    Metrics required:
+    1. co2Emissions (tons per capita) [Range 0-25]
+    2. airQualityIndex (AQI) [Range 0-300, lower is better]
+    3. renewableEnergy (% of total energy) [Range 0-100]
+    4. wasteRecycling (% rate) [Range 0-100]
+    5. greenSpace (m2 per capita) [Range 0-100]
+    6. publicTransport (% of commuters) [Range 0-100]
+    7. waterQuality (Index 0-100, higher is better)
+    8. energyEfficiency (Index 0-100, higher is better)
+    9. region (e.g., Europe, Asia, Americas, Africa, Oceania)
+
+    Your response MUST be in raw JSON format with the following keys:
+    {
+      "co2Emissions": float,
+      "airQualityIndex": int,
+      "renewableEnergy": int,
+      "wasteRecycling": int,
+      "greenSpace": int,
+      "publicTransport": int,
+      "waterQuality": int,
+      "energyEfficiency": int,
+      "region": "..."
+    }
+  `;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    const jsonStr = text.replace(/```json|```/g, "").trim();
+    return JSON.parse(jsonStr);
+  } catch (error) {
+    console.error("Gemini Autofill Error:", error);
+    // Generic regional fallbacks if research fails
+    return {
+      co2Emissions: 6.0,
+      airQualityIndex: 50,
+      renewableEnergy: 20,
+      wasteRecycling: 30,
+      greenSpace: 15,
+      publicTransport: 30,
+      waterQuality: 80,
+      energyEfficiency: 70,
+      region: "Global Average"
+    };
+  }
+};

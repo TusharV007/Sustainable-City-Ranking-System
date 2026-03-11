@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { calculateSustainabilityScore, getImpactLevel, CityMetrics } from "@/lib/scoring";
-import { analyzeCitySustainability } from "@/lib/gemini";
+import { analyzeCitySustainability, fetchCityMetrics } from "@/lib/gemini";
+import { Sparkles, Loader2 } from "lucide-react";
 import { 
   Building2, 
   Wind, 
@@ -30,6 +31,7 @@ export default function AssessCityPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [researching, setResearching] = useState(false);
   const [success, setSuccess] = useState(false);
   
   const [formData, setFormData] = useState<CityMetrics & { name: string; country: string; region: string }>({
@@ -52,6 +54,27 @@ export default function AssessCityPage() {
       ...prev,
       [name]: name === "name" || name === "country" || name === "region" ? value : parseFloat(value) || 0
     }));
+  };
+
+  const handleAutofill = async () => {
+    if (!formData.name || !formData.country) {
+      alert("Please enter city name and country first!");
+      return;
+    }
+
+    setResearching(true);
+    try {
+      const results = await fetchCityMetrics(formData.name, formData.country);
+      setFormData(prev => ({
+        ...prev,
+        ...results
+      }));
+    } catch (error) {
+      console.error("Autofill error:", error);
+      alert("AI Research failed. You can still fill the data manually.");
+    } finally {
+      setResearching(false);
+    }
   };
 
   const getCoordinates = async (city: string, country: string): Promise<[number, number] | null> => {
@@ -191,6 +214,29 @@ export default function AssessCityPage() {
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Region</label>
                     <Input name="region" value={formData.region} onChange={handleChange} placeholder="e.g. Europe" required className="rounded-xl h-12" />
+                  </div>
+                  <div className="md:col-span-3 pt-4">
+                    <Button 
+                      type="button" 
+                      onClick={handleAutofill} 
+                      disabled={researching || !formData.name || !formData.country}
+                      className="w-full h-14 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white font-black flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-zinc-200"
+                    >
+                      {researching ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          AI Researching Urban Data...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5 text-yellow-400" />
+                          Auto-fill with AI Research
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-[10px] font-bold text-zinc-400 mt-3 text-center uppercase tracking-tighter">
+                      Powered by Gemini 1.5 Pro • Fetches estimates based on global reports
+                    </p>
                   </div>
                 </CardContent>
               </Card>
