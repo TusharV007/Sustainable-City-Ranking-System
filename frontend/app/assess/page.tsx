@@ -54,6 +54,27 @@ export default function AssessCityPage() {
     }));
   };
 
+  const getCoordinates = async (city: string, country: string): Promise<[number, number] | null> => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&format=json&limit=1`,
+        {
+          headers: {
+            'User-Agent': 'UrbEco-Sustainability-Platform'
+          }
+        }
+      );
+      const data = await response.json();
+      if (data && data.length > 0) {
+        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+      }
+      return null;
+    } catch (error) {
+      console.error("Geocoding failed:", error);
+      return null;
+    }
+  };
+
   const currentScore = calculateSustainabilityScore(formData);
   const impactLevel = getImpactLevel(currentScore);
 
@@ -79,12 +100,16 @@ export default function AssessCityPage() {
       }
       setAnalyzing(false);
 
-      // Step 2: Save to Firestore
+      // Step 2: Fetch coordinates
+      const coordinates = await getCoordinates(formData.name, formData.country);
+
+      // Step 3: Save to Firestore
       await addDoc(collection(db, "assessments"), {
         ...formData,
         score: currentScore,
         impact: impactLevel,
         insights: insights,
+        coordinates: coordinates, // Add coordinates here
         userId: user.uid,
         userEmail: user.email,
         createdAt: serverTimestamp(),
@@ -119,8 +144,8 @@ export default function AssessCityPage() {
       <div className="max-w-4xl mx-auto px-4 px-4 sm:px-6 lg:px-8">
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-black text-zinc-900 mb-2 font-black">City Sustainability Assessment</h1>
-            <p className="text-zinc-500 text-lg font-medium">Enter environmental metrics to calculate the sustainability index.</p>
+            <h1 className="text-4xl font-black text-zinc-900 mb-2 font-black">UrbEco City Assessment</h1>
+            <p className="text-zinc-500 text-lg font-medium">Enter environmental metrics to calculate the UrbEco sustainability index.</p>
           </div>
           <div className="bg-white p-6 rounded-3xl shadow-xl flex items-center gap-6 min-w-[200px] border border-zinc-100">
              <div className="text-center">

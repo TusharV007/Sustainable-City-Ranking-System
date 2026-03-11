@@ -133,7 +133,7 @@ export default function MethodologyPage() {
           </CardHeader>
           <CardContent className="p-0 space-y-6">
             <p className="text-zinc-700 leading-relaxed text-lg">
-              Our Sustainable City Ranking System uses a comprehensive, data-driven approach to
+              UrbEco uses a comprehensive, data-driven approach to
               evaluate environmental performance across multiple dimensions. Each city receives a
               sustainability score from 0-100 based on eight key environmental metrics.
             </p>

@@ -20,7 +20,7 @@ export function Navigation() {
   };
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Dashboard' },
+    { path: '/dashboard', icon: Home, label: 'Dashboard' },
     { path: '/rankings', icon: BarChart3, label: 'Rankings' },
     { path: '/map', icon: Map, label: 'Map View' },
     { path: '/compare', icon: GitCompare, label: 'Compare' },
@@ -32,12 +32,9 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center group-hover:bg-green-700 transition-colors shadow-lg shadow-green-100">
-                <BarChart3 className="w-7 h-7 text-white" />
-              </div>
+            <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-3 group">
               <div className="hidden sm:block">
-                <h1 className="text-xl font-black text-zinc-900 leading-tight">EcoStats</h1>
+                <h1 className="text-xl font-black text-zinc-900 leading-tight tracking-tighter">UrbEco</h1>
                 <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Sustainability Index</p>
               </div>
             </Link>

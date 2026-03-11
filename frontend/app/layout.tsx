@@ -14,9 +14,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { AuthGuard } from "@/components/AuthGuard";
+
 export const metadata: Metadata = {
-  title: "Sustainable City Rankings",
-  description: "Global environmental impact assessment for cities",
+  title: "UrbEco",
+  description: "Global environmental impact assessment and sustainability index for cities",
 };
 
 export default function RootLayout({
@@ -30,8 +32,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-50`}
       >
         <AuthProvider>
-          <Navigation />
-          {children}
+          <AuthGuard>
+            <Navigation />
+            {children}
+          </AuthGuard>
         </AuthProvider>
       </body>
     </html>

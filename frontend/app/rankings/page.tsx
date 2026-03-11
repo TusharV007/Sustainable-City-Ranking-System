@@ -96,9 +96,9 @@ export default function RankingsPage() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-3 bg-green-100 text-green-700 px-5 py-2 rounded-2xl mb-6 border border-green-200 shadow-sm">
                <Award className="w-5 h-5" />
-               <span className="text-xs font-black uppercase tracking-widest">Global Sustainability Index</span>
+               <span className="text-xs font-black uppercase tracking-widest">UrbEco Global Index</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black text-zinc-900 leading-[0.9] tracking-tighter mb-4">City Rankings</h1>
+            <h1 className="text-5xl md:text-7xl font-black text-zinc-900 leading-[0.9] tracking-tighter mb-4">UrbEco Rankings</h1>
             <p className="text-zinc-500 text-xl font-medium leading-relaxed">
               Real-time leaderboard of cities based on verified environmental assessments and sustainability metrics.
             </p>
