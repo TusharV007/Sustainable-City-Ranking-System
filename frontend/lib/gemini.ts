@@ -93,14 +93,23 @@ export const fetchCityMetrics = async (
     throw new Error("Gemini API key is not configured");
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-2.0-flash",
+    generationConfig: {
+      temperature: 0.4,
+    }
+  });
 
   const prompt = `
-    You are a world-class urban environmental researcher. 
-    Provide estimated sustainability metrics for ${cityName}, ${country} based on latest available environmental reports, regional averages, and urban characteristics.
+    You are an expert urban environmental researcher. I need highly specific, accurate, and distinct sustainability estimates for the following location:
+    
+    Target City: ${cityName}
+    Target Country: ${country}
+
+    CRITICAL INSTRUCTION: Do NOT use generic placeholder values. Your estimates must reflect the true environmental profile of ${cityName}, taking into account its specific climate, infrastructure, economy, and population density. For example, a city with heavy industry should have high CO2 and AQI, while a Scandinavian city should have high renewables and low emissions. Provide highly realistic numbers based on real-world data for this specific location.
 
     Metrics required:
-    1. co2Emissions (tons per capita) [Range 0-25]
+    1. co2Emissions (tons per capita) [Range 0-25.0]
     2. airQualityIndex (AQI) [Range 0-300, lower is better]
     3. renewableEnergy (% of total energy) [Range 0-100]
     4. wasteRecycling (% rate) [Range 0-100]
